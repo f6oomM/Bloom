@@ -50,7 +50,7 @@ Alternative to running `schema.sql`: `python -m app.init_db` creates the tables 
 ### 3. Frontend
 The frontend developers create the React + Tailwind app inside the `frontend/` folder.
 
-## Git workflow (SPMP section 5.3)
+## Git workflow 
 | Branch | Purpose | Who changes it |
 |---|---|---|
 | `main` | Final, working version | Only by merging `dev` after testing |
@@ -64,7 +64,7 @@ The frontend developers create the React + Tailwind app inside the `frontend/` f
 
 **Never commit `.env` or any password/key.**
 
-## Reporting problems (SPMP section 5.4)
+## Reporting problems 
 Open a GitHub Issue: title, description, steps to reproduce, affected module. The Project Manager sets the priority label and assigns it. The fix goes on its own branch; a tester verifies it and closes the issue. Requirement or schedule changes use the **change request** template.
 
 ## Team
