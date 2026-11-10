@@ -315,7 +315,7 @@ class EmailVerification(Base):
     )
     code_hash: Mapped[str] = mapped_column(String(255), nullable=False)  # hashed, never plain text
     expires_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-    attempts: Mapped[int] = mapped_column(TINYINT, nullable=False, default=0)
+    attempts: Mapped[int] = mapped_column(SmallInteger, nullable=False, default=0)
     is_used: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime, nullable=False, server_default=func.now()
