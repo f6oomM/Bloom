@@ -5,12 +5,35 @@ Course project for CSC 305 (Software Engineering), IAU.
 
 **Stack:** FastAPI (Python) · React.js + Tailwind CSS · MySQL + SQLAlchemy · JWT · Figma · Git/GitHub
 
-## Folders
-| Folder | Contents |
-|---|---|
-| `backend/` | FastAPI app (`app/`), the SQL schema (`database/`) and tests (`tests/`) |
-| `frontend/` | React + Tailwind app |
-| `docs/` | Project documents (SRS, SDS, STS, status reports; add a version number to the file name, e.g. `SRS_v1`) and the database diagram |
+## Folder structure
+```
+Bloom/
+|-- README.md                    Project overview and setup steps
+|-- .gitignore                   Files Git must ignore (.env, .venv, node_modules, ...)
+|-- backend/
+|   |-- requirements.txt         Python packages to install
+|   |-- .env.example             Template for your private .env (never commit .env)
+|   |-- app/
+|   |   |-- main.py              FastAPI app and the /health endpoint
+|   |   |-- database.py          Database connection and session
+|   |   |-- models.py            SQLAlchemy models (must match schema.sql)
+|   |   |-- init_db.py           Creates the tables from the models
+|   |   `-- routers/             API endpoints, one file per area
+|   |       |-- auth.py              Register, log in, email verification
+|   |       |-- students.py          Student profiles, applications, calendar, teams
+|   |       |-- organizations.py     Organization profiles and received applications
+|   |       |-- opportunities.py     Create, list, search and filter opportunities
+|   |       `-- admin.py             Approve or reject organizations and posts
+|   |-- database/
+|   |   `-- schema.sql           MySQL schema (16 tables)
+|   `-- tests/
+|       `-- test_health.py       Automated tests (pytest)
+|-- frontend/                    React + Tailwind app (created by the frontend team)
+`-- docs/
+    |-- database-schema.md       Description of every table
+    `-- bloom-erd.png            Database diagram (ERD)
+```
+Project documents (SRS, SDS, STS, status reports) also go in `docs/`. Add a version number to the file name, e.g. `SRS_v1`.
 
 ## Who works where
 Each person edits mainly their own files, which keeps merge conflicts rare.
