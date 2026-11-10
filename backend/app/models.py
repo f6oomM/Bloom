@@ -301,3 +301,22 @@ class Notification(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())
 
     user = relationship("User", back_populates="notifications")
+
+
+class EmailVerification(Base):
+    """One-time password (OTP) sent to a student's email when registering."""
+ 
+    __tablename__ = "email_verifications"
+    __table_args__ = (Index("idx_ev_user", "user_id", "is_used"),)
+ 
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
+    code_hash: Mapped[str] = mapped_column(String(255), nullable=False)  # hashed, never plain text
+    expires_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    attempts: Mapped[int] = mapped_column(TINYINT, nullable=False, default=0)
+    is_used: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False, server_default=func.now()
+    )

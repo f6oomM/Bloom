@@ -209,3 +209,19 @@ CREATE TABLE notifications (
   CONSTRAINT fk_n_opp  FOREIGN KEY (opportunity_id) REFERENCES opportunities(id) ON DELETE SET NULL,
   INDEX idx_n_user_read (user_id, is_read)
 ) ENGINE=InnoDB;
+-- ---------------------------------------------------------------
+-- Email verification (OTP sent to a student when registering)
+-- The code is stored hashed, never as plain text. A student account
+-- is activated (users.is_active = TRUE) only after a valid code.
+-- ---------------------------------------------------------------
+CREATE TABLE email_verifications (
+  id         INT AUTO_INCREMENT PRIMARY KEY,
+  user_id    INT NOT NULL,
+  code_hash  VARCHAR(255) NOT NULL,                    -- hashed OTP, never plain text
+  expires_at DATETIME NOT NULL,                        -- e.g. 10 minutes after creation
+  attempts   TINYINT NOT NULL DEFAULT 0,               -- wrong guesses so far
+  is_used    BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_ev_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  INDEX idx_ev_user (user_id, is_used)
+) ENGINE=InnoDB;

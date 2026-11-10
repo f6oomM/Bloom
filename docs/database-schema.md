@@ -43,3 +43,17 @@ These cannot be expressed in SQL alone:
 - Only `approved` organizations can post, and only `approved` opportunities are shown to students.
 - A team cannot exceed `max_members`; the team leader is also inserted into `team_members` with role `leader`.
 - Deleting a user deletes their profile, applications, calendar entries and notifications (cascade).
+
+### email_verifications
+Stores the one-time password (OTP) sent to a student's email when registering.
+The code is stored hashed, never as plain text.
+
+| Column     | Type         | Notes                                      |
+|------------|--------------|--------------------------------------------|
+| id         | INT          | Primary key                                |
+| user_id    | INT          | Foreign key to users(id)                   |
+| code_hash  | VARCHAR(255) | Hashed OTP                                 |
+| expires_at | DATETIME     | When the code stops working                |
+| attempts   | TINYINT      | Number of wrong guesses so far             |
+| is_used    | BOOLEAN      | True once the code has been verified       |
+| created_at | DATETIME     | When the code was created                  |
