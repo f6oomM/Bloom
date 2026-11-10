@@ -1,118 +1,94 @@
-# Lab Assignment 1: Pandas vs. Polars
+# Bloom
 
-## About the Assignment
+A student-opportunities website (hackathons, co-ops, internships, volunteering, workshops) with three interfaces: Student, Organization/Company, and Admin.
+Course project for CSC 305 (Software Engineering), IAU.
 
-This is a **group assignment** for **Programming for Artificial Intelligence (ARTI 303)**. Each group should have **5–6 members** and submit **one submission per group**.
+**Stack:** FastAPI (Python) · React.js + Tailwind CSS · MySQL + SQLAlchemy · JWT · Figma · Git/GitHub
 
-The goal of this assignment is to compare **Pandas** with another Python data-processing library, **Polars**, using a public dataset selected by the group. The group will measure and report the performance of both libraries based on the chosen dataset.
-
-## Group Members
-
-| Name | Student ID | Role |
-|---|---|---|
-| Member 1 | XXXXXXXX | Leader |
-| Member 2 | XXXXXXXX | Member |
-| Member 3 | XXXXXXXX | Member |
-| Member 4 | XXXXXXXX | Member |
-| Member 5 | XXXXXXXX | Member |
-| Member 6 | XXXXXXXX | XXX |
-
-> Remove any unused member row if your group has fewer than 6 members.
-
-## Dataset
-
-The group must choose **one public dataset** that meets all of the following requirements:
-
-- CSV format
-- At least **100,000 rows**
-- At least **one text/category column**
-- At least **two numeric columns**
-
-### Dataset Link
-
-[Add your dataset link here](YOUR_DATASET_LINK)
-
-##  Requirements
-
-Before starting the assignment:
-
-- All group members must join the same group in Blackboard.
-- One group member should create the group's GitHub repository.
-- The repository owner should add all other group members as collaborators.
-- Every member should have the course environment ready with `.venv` active.
-
-## Getting Started
-
-### 1. Fork the Course Repository
-
-Fork the course repository to your GitHub account.
-
-### 2. Pull the Assignment Notebook
-
-Pull the assignment notebook from the course repository:
-
-### 3. Select the Dataset
-
-Choose one public CSV dataset that satisfies the dataset requirements listed above.
-
-### 4. Complete the Assignment Notebook
-
-Complete all required tasks in the assignment notebook.
-
-The notebook will be available in the course repository on **Thursday at 12:00 PM**.
-
-### 5. Run the Notebook
-
-After completing the notebook:
-
-1. Restart the kernel.
-2. Run the notebook from top to bottom.
-3. Make sure all results are saved in the notebook.
-
-### 6. Push Your Work
-
-Push the completed notebook to the group's GitHub repository.
-
-
-## Repository Structure
-
-A recommended repository structure is:
-
-```text
-.
-├── README.md
-├── assignment_notebook.ipynb
-└── .gitignore
+## Folder structure
 ```
+Bloom/
+|-- README.md                    Project overview and setup steps
+|-- .gitignore                   Files Git must ignore (.env, .venv, node_modules, ...)
+|-- backend/
+|   |-- requirements.txt         Python packages to install
+|   |-- .env.example             Template for your private .env (never commit .env)
+|   |-- app/
+|   |   |-- main.py              FastAPI app and the /health endpoint
+|   |   |-- database.py          Database connection and session
+|   |   |-- models.py            SQLAlchemy models (must match schema.sql)
+|   |   |-- init_db.py           Creates the tables from the models
+|   |   `-- routers/             API endpoints, one file per area
+|   |       |-- auth.py              Register, log in, email verification
+|   |       |-- students.py          Student profiles, applications, calendar, teams
+|   |       |-- organizations.py     Organization profiles and received applications
+|   |       |-- opportunities.py     Create, list, search and filter opportunities
+|   |       `-- admin.py             Approve or reject organizations and posts
+|   |-- database/
+|   |   `-- schema.sql           MySQL schema (16 tables)
+|   `-- tests/
+|       `-- test_health.py       Automated tests (pytest)
+|-- frontend/                    React + Tailwind app (created by the frontend team)
+`-- docs/
+    |-- database-schema.md       Description of every table
+    `-- bloom-erd.png            Database diagram (ERD)
+```
+Project documents (SRS, SDS, STS, status reports) also go in `docs/`. Add a version number to the file name, e.g. `SRS_v1`.
 
-> Replace `assignment_notebook.ipynb` with the actual notebook filename provided in the course repository.
+## Who works where
+Each person edits mainly their own files, which keeps merge conflicts rare.
 
-## GitHub Repository
+| Member | Role | Files / folders |
+|---|---|---|
+| Weam Alshamrani | Backend | `backend/app/routers/auth.py`, `students.py` |
+| Ghofrane Hasnaoui | Backend | `backend/app/routers/organizations.py`, `opportunities.py`, `admin.py` |
+| Fatima AlSadiq | Frontend | `frontend/` (Figma designs and student pages) |
+| Jana Al Ramadhan | Frontend | `frontend/` (organization and admin dashboards) |
+| Fatimah Al Darwish | Database and Integration | `backend/database/`, `backend/app/models.py`, `database.py`, repository setup |
+| Fajr Alsmail | QA / Documentation | `backend/tests/`, `docs/` |
+| Raghad Alomari | Project Manager | `docs/`, GitHub issues and priorities |
 
-The repository must be **public** so that the submitted link can be opened without requiring a login.
+Need a new table or column? Ask Fatimah, or open a pull request that changes both `schema.sql` and `models.py`.
 
-**Repository:** [Add your GitHub repository link here](YOUR_GITHUB_REPOSITORY_LINK)
+## Getting started
 
-## Submission
+### 1. Database (MySQL 8)
+    mysql -u root -p < backend/database/schema.sql
+    mysql -u root -p -e "CREATE USER 'bloom_user'@'localhost' IDENTIFIED BY 'choose-a-password'; GRANT ALL ON bloom.* TO 'bloom_user'@'localhost';"
 
-Each group should submit **one Word document** using the provided submission template.
+### 2. Backend
+    cd backend
+    python -m venv .venv
+    .venv\Scripts\activate          # Windows   (Mac/Linux: source .venv/bin/activate)
+    pip install -r requirements.txt
+    cp .env.example .env            # then edit .env with your password and a secret key
+    uvicorn app.main:app --reload
 
-The Word document must contain the following, **in this exact order**:
+Open http://localhost:8000/docs (Swagger UI). `GET /health` should return `{"status":"ok"}`.
 
-1. Names, student IDs, and section of **all group members**
-2. A screenshot of the terminal when the assignment was pulled
-3. The dataset link
-4. The GitHub repository link
-5. A screenshot of the terminal when the work was pushed
+Run the tests (from `backend/`): `python -m pytest`
 
+Alternative to running `schema.sql`: `python -m app.init_db` creates the tables from the models.
 
-## Repository Rules
+### 3. Frontend
+The frontend developers create the React + Tailwind app inside the `frontend/` folder.
 
-- The GitHub repository must be **public**.
-- The repository link must open without requiring a login.
-- If the dataset is larger than approximately **50 MB**, **do not commit the dataset to the repository**.
-- For datasets larger than approximately 50 MB:
-  - Add the dataset to `.gitignore`.
-  - Include the dataset download link in the Word submission document.
+## Git workflow 
+| Branch | Purpose | Who changes it |
+|---|---|---|
+| `main` | Final, working version | Only by merging `dev` after testing |
+| `dev` | Finished features combined and tested | Approved pull requests only |
+| `feature/<name>` | One task, e.g. `feature/student-profile` | The member doing that task |
 
-Wishing you all the best!
+1. Update `dev`, then branch from it: `git checkout dev && git pull && git checkout -b feature/<name>`
+2. Commit often. Messages start with a verb: `Add login endpoint`.
+3. Push and open a **pull request into `dev`**. At least one teammate must review and approve it.
+4. After approval, merge. At the end of each sprint, `dev` is tested and merged into `main`.
+
+**Never commit `.env` or any password/key.**
+
+## Reporting problems 
+Open a GitHub Issue: title, description, steps to reproduce, affected module. The Project Manager sets the priority label and assigns it. The fix goes on its own branch; a tester verifies it and closes the issue. Requirement or schedule changes use the **change request** template.
+
+## Team
+Raghad Alomari (Project Manager / Team Lead) · Weam Alshamrani, Ghofrane Hasnaoui (Backend) · Fatima AlSadiq, Jana Al Ramadhan (Frontend) · Fatimah Al Darwish (Database and Integration) · Fajr Alsmail (QA / Documentation)
