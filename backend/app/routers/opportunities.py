@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 
 from ..database import get_db
 
+
 from ..models import (
     Interest,
     Opportunity,
@@ -27,28 +28,54 @@ router = APIRouter(
 
 
 
-# ---------- View and search approved opportunities ----------
+
+# ---------- View, search and filter approved opportunities ----------
 
 @router.get("/")
 def list_approved_opportunities(
     search: str | None = Query(default=None, max_length=100),
+    city: str | None = Query(default=None, max_length=100),
+    type: OpportunityType | None = None,
+    interest: str | None = Query(default=None, max_length=80),
     db: Session = Depends(get_db)
 ):
-    query = db.query(Opportunity).filter(
-        Opportunity.status == ReviewStatus.approved
+    query = (
+        db.query(Opportunity)
+        .join(
+            OrganizationProfile,
+            Opportunity.organization_id == OrganizationProfile.user_id
+        )
+        .filter(
+            Opportunity.status == ReviewStatus.approved,
+            OrganizationProfile.approval_status == ReviewStatus.approved
+        )
     )
 
     if search and search.strip():
         keyword = search.strip()
-
         query = query.filter(
             Opportunity.title.ilike(f"%{keyword}%")
             | Opportunity.description.ilike(f"%{keyword}%")
         )
 
+    if city and city.strip():
+        query = query.filter(
+            Opportunity.city.ilike(city.strip())
+        )
+
+    if type is not None:
+        query = query.filter(Opportunity.type == type)
+
+    if interest and interest.strip():
+        query = query.filter(
+            Opportunity.interests.any(
+                Interest.name.ilike(interest.strip())
+            )
+        )
+
     opportunities = query.order_by(
         Opportunity.created_at.desc()
-    ).all()
+    ).limit(100).all()
 
     return [
         {
@@ -65,6 +92,7 @@ def list_approved_opportunities(
         }
         for opportunity in opportunities
     ]
+
 
 # ---------- View one opportunity's details ----------
 
