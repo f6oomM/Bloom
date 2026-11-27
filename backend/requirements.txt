@@ -7,3 +7,5 @@ python-dotenv
 email-validator
 pytest
 httpx
+bcrypt
+PyJWT
